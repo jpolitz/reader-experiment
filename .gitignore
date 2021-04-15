@@ -1,0 +1,8 @@
+mochawesome-report/
+node_modules/
+lang.js
+lang.terms.js
+dist/
+*.map
+test/*.js
+

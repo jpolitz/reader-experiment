@@ -18,7 +18,7 @@ Prog {
 }
 
 Header {
-  Parens | Brackets | Name !call Parens | Name !call Brackets
+  Parens | Brackets | Braces | Name !call Parens | Name !call Brackets | Name !call Braces
 }
 
 skelorpair {
@@ -34,6 +34,10 @@ Parens {
   | "(" ")"
 }
 Brackets {
+    "[" "]"
+  | "[" skelseq "]"
+}
+Braces {
     "{" "}"
   | "{" skelseq "}"
 }

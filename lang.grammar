@@ -1,0 +1,64 @@
+@top Program { skel* }
+
+@precedence { call @right, header @right, left @left }
+
+@skip { space }
+
+skel {
+  KwBlock | Terminal | Math | Prog | Header
+}
+
+Math {
+  skel !left Op skel
+}
+
+Prog {
+    skel !left "." skel
+  | skel !left "=" skel
+}
+
+Header {
+  Parens | Brackets | Name !call Parens | Name !call Brackets
+}
+
+skelorpair {
+  skel | Pair
+}
+
+Pair {
+  skel "=>" skel
+}
+
+Parens {
+    "(" skelseq ")"
+  | "(" ")"
+}
+Brackets {
+    "{" "}"
+  | "{" skelseq "}"
+}
+
+Block {
+    skel*
+  | ("|" skelorpair)*
+}
+
+KwBlock {
+    Name !header Header? ":" Block @specialize<Name, "end">
+}
+
+Terminal { Name | Str | Number }
+
+@tokens {
+  space { std.whitespace }
+  Name { std.asciiLetter+ }
+  Str { "\"" std.asciiLetter+ "\"" }
+  Number { std.digit+ }
+  Op { "+" | "-" | "*" | "/" | "==" | "<" | ">" | ">=" | "<=" }
+}
+
+skelseq {
+  ((Name | Header) ":")? skelorpair ("," skelorpair)* | skelorpair (";" skelorpair)*
+}
+
+

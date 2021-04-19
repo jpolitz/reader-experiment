@@ -30,7 +30,7 @@ function myEval(cmd : string, context : any, filename : string, callback : any) 
   const tree = parser.parser.configure({strict: true}).parse(input);
   const cursor = tree.cursor();
 
-  console.log(JSON.stringify(toSexp(cmd, cursor), null));
+  console.log(JSON.stringify(toSexp(cmd, cursor), null, 2));
   callback(null, "");
 }
 

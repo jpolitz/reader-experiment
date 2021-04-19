@@ -110,3 +110,381 @@ assigning a lot of meaning to different ops
 
 >>> o.x().z()
 ["Math",["Math",["Name","o"],["Op","."],["Group",["Name","x"],["Parens","()"]]],["Op","."],["Group",["Name","z"],["Parens","()"]]]
+
+
+
+>>> automaton(init): init{ c => more } more{ a => more, d => more, r => done } done end
+[
+  "Block",
+  [
+    "Group",
+    [
+      "Name",
+      "automaton"
+    ],
+    [
+      "Parens",
+      [
+        "Name",
+        "init"
+      ]
+    ]
+  ],
+  [
+    "KwBlock",
+    [
+      "Block",
+      [
+        "Group",
+        [
+          "Name",
+          "init"
+        ],
+        [
+          "Braces",
+          [
+            "Pair",
+            [
+              "Name",
+              "c"
+            ],
+            [
+              "Name",
+              "more"
+            ]
+          ]
+        ]
+      ],
+      [
+        "Group",
+        [
+          "Name",
+          "more"
+        ],
+        [
+          "Braces",
+          [
+            "Pair",
+            [
+              "Name",
+              "a"
+            ],
+            [
+              "Name",
+              "more"
+            ]
+          ],
+          [
+            "Pair",
+            [
+              "Name",
+              "d"
+            ],
+            [
+              "Name",
+              "more"
+            ]
+          ],
+          [
+            "Pair",
+            [
+              "Name",
+              "r"
+            ],
+            [
+              "Name",
+              "done"
+            ]
+          ]
+        ]
+      ],
+      [
+        "Name",
+        "done"
+      ]
+    ]
+  ]
+
+>>> automaton(init): | init :: { c => more } | more :: { a => more, d => more, r => done } | done end
+[
+  "Block",
+  [
+    "Group",
+    [
+      "Name",
+      "automaton"
+    ],
+    [
+      "Parens",
+      [
+        "Name",
+        "init"
+      ]
+    ]
+  ],
+  [
+    "KwBlock",
+    [
+      "Block",
+      [
+        "Pair",
+        [
+          "Name",
+          "init"
+        ],
+        [
+          "Braces",
+          [
+            "Pair",
+            [
+              "Name",
+              "c"
+            ],
+            [
+              "Name",
+              "more"
+            ]
+          ]
+        ]
+      ],
+      [
+        "Pair",
+        [
+          "Name",
+          "more"
+        ],
+        [
+          "Braces",
+          [
+            "Pair",
+            [
+              "Name",
+              "a"
+            ],
+            [
+              "Name",
+              "more"
+            ]
+          ],
+          [
+            "Pair",
+            [
+              "Name",
+              "d"
+            ],
+            [
+              "Name",
+              "more"
+            ]
+          ],
+          [
+            "Pair",
+            [
+              "Name",
+              "r"
+            ],
+            [
+              "Name",
+              "done"
+            ]
+          ]
+        ]
+      ],
+      [
+        "Name",
+        "done"
+      ]
+    ]
+  ]
+]
+
+
+
+
+>>> fun f(x = 10, y = get-default()): x + y end
+[
+  "Block",
+  [
+    "Name",
+    "fun"
+  ],
+  [
+    "Group",
+    [
+      "Name",
+      "f"
+    ],
+    [
+      "Parens",
+      [
+        "Math",
+        [
+          "Name",
+          "x"
+        ],
+        [
+          "Op",
+          " = "
+        ],
+        [
+          "Number",
+          "10"
+        ]
+      ],
+      [
+        "Math",
+        [
+          "Name",
+          "y"
+        ],
+        [
+          "Op",
+          " = "
+        ],
+        [
+          "Group",
+          [
+            "Name",
+            "get-default"
+          ],
+          [
+            "Parens",
+            "()"
+          ]
+        ]
+      ]
+    ]
+  ],
+  [
+    "KwBlock",
+    [
+      "Math",
+      [
+        "Name",
+        "x"
+      ],
+      [
+        "Op",
+        " + "
+      ],
+      [
+        "Name",
+        "y"
+      ]
+    ]
+  ]
+]
+
+
+
+
+
+>>> fun f(x :: Number, y :: Number): x + y end
+[
+  "Block",
+  [
+    "Name",
+    "fun"
+  ],
+  [
+    "Group",
+    [
+      "Name",
+      "f"
+    ],
+    [
+      "Parens",
+      [
+        "Pair",
+        [
+          "Name",
+          "x"
+        ],
+        [
+          "Name",
+          "Number"
+        ]
+      ],
+      [
+        "Pair",
+        [
+          "Name",
+          "y"
+        ],
+        [
+          "Name",
+          "Number"
+        ]
+      ]
+    ]
+  ],
+  [
+    "KwBlock",
+    [
+      "Math",
+      [
+        "Name",
+        "x"
+      ],
+      [
+        "Op",
+        " + "
+      ],
+      [
+        "Name",
+        "y"
+      ]
+    ]
+  ]
+]
+
+
+
+
+>>> fun f(x :: Number = 10): x end
+[
+  "Block",
+  [
+    "Name",
+    "fun"
+  ],
+  [
+    "Group",
+    [
+      "Name",
+      "f"
+    ],
+    [
+      "Parens",
+      [
+        "Pair",
+        [
+          "Name",
+          "x"
+        ],
+        [
+          "Math",
+          [
+            "Name",
+            "Number"
+          ],
+          [
+            "Op",
+            " = "
+          ],
+          [
+            "Number",
+            "10"
+          ]
+        ]
+      ]
+    ]
+  ],
+  [
+    "KwBlock",
+    [
+      "Name",
+      "x"
+    ]
+  ]
+]

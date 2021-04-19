@@ -1,51 +1,112 @@
 >>> 5
 ["Number","5"]
-'Success'
+
 >>> 5 + 1
 ["Math",["Number","5"],["Op"," + "],["Number","1"]]
-'Success'
+
+
+Spaces in tokens enforce this.
+
 >>> 5+1
 Uncaught SyntaxError: No parse at 1
+
+Good old functions. Note that the fun, f, (x) are not immediately associated with the block containing the body
+
 >>> fun f(x): x * 2 end
 ["Block",["Name","fun"],["Group",["Name","f"],["Parens",["Name","x"]]],["KwBlock",["Math",["Name","x"],["Op"," * "],["Number","2"]]]]
-'Success'
+
+
+I'm using [] for parameterization rather than <> because the ambiguities with
+greater/less than without forcing NOSPACE tokenization are rough
+
 >>> data D[A]: empty | link(f :: A, r :: D[A]) end
 ["Block",["Name","data"],["Group",["Name","D"],["Brackets",["Name","A"]]],["KwBlock",["Block",["Name","empty"],["Group",["Name","link"],["Parens",["Pair",["Name","f"],["Name","A"]],["Pair",["Name","r"],["Group",["Name","D"],["Brackets",["Name","A"]]]]]]]]]
-'Success'
+
+
+Note that this turns into 4 applied to 5 applied to 6 (just like Honu) due to !call
+
 >>> (4) (5) (6)
 ["Group",["Group",["Parens",["Number","4"]],["Parens",["Number","5"]]],["Parens",["Number","6"]]]
-'Success'
+
+
+Both sets of parens are required here to get into the right kind of context
+
 >>> f :: ((x :: Number, y :: Number) => Number)
 ["Pair",["Name","f"],["Parens",["Pair",["Parens",["Pair",["Name","x"],["Name","Number"]],["Pair",["Name","y"],["Name","Number"]]],["Name","Number"]]]]
-'Success'
+
+
+Note that the cases, (List), and l are not immediately associated with the
+block. A head-matching macro would be needed here
+
 >>> cases(List) l: empty => 0 | link(f, r) => 1 + len(r) end
 ["Block",["Group",["Name","cases"],["Parens",["Name","List"]]],["Name","l"],["KwBlock",["Block",["Pair",["Name","empty"],["Number","0"]],["Pair",["Group",["Name","link"],["Parens",["Name","f"],["Name","r"]]],["Math",["Number","1"],["Op"," + "],["Group",["Name","len"],["Parens",["Name","r"]]]]]]]]
-'Success'
+
+
+Our current table syntax won't work, but there are other options
+
 >>> table(a, b, c): [1, 2, 3] end
 ["Block",["Group",["Name","table"],["Parens",["Name","a"],["Name","b"],["Name","c"]]],["KwBlock",["Brackets",["Number","1"],["Number","2"],["Number","3"]]]]
-'Success'
 >>> table a, b, c: row: 1, 2, 3 end
 Uncaught SyntaxError: No parse at 7
+
+
+Other blocky things work. Note that the while and True are their own elements
+in the block, not associated with the : ... end block at the reader step
+
 >>> while True: when x > 10: break end x = x + 1 end
 ["Block",["Name","while"],["Name","True"],["KwBlock",["Block",["Name","when"],["Math",["Name","x"],["Op"," > "],["Number","10"]],["KwBlock",["Name","break"]],["Math",["Math",["Name","x"],["Op"," = "],["Name","x"]],["Op"," + "],["Number","1"]]]]]
-'Success'
+
+
+I think it would be a heroic effor to make traditional if work
+
 >>> if x > 10: print("big") else: print("little") end
 Uncaught SyntaxError: No parse at 50
+
+
+However, there are tricks, and "::" and "=>" aren't the only grouping/pairing
+we could choose. It's just that context-specific keywords are tough.
+
 >>> if x > 10: print("big") :: print("little") end
 ["Block",["Name","if"],["Math",["Name","x"],["Op"," > "],["Number","10"]],["KwBlock",["Pair",["Group",["Name","print"],["Parens",["Str","\"big\""]]],["Group",["Name","print"],["Parens",["Str","\"little\""]]]]]]
-'Success'
 >>> if x > 10: print("big") => print("little") end
 ["Block",["Name","if"],["Math",["Name","x"],["Op"," > "],["Number","10"]],["KwBlock",["Pair",["Group",["Name","print"],["Parens",["Str","\"big\""]]],["Group",["Name","print"],["Parens",["Str","\"little\""]]]]]]
-'Success'
+
+
+Ask works just fine
+
 >>> ask: x > 10 => print("big") | else => print("little") end
 ["Block",["Name","ask"],["KwBlock",["Block",["Pair",["Math",["Name","x"],["Op"," > "],["Number","10"]],["Group",["Name","print"],["Parens",["Str","\"big\""]]]],["Pair",["Name","else"],["Group",["Name","print"],["Parens",["Str","\"little\""]]]]]]]
-'Success'
+
+
+I actually got confused about if reactors should be ,-separated or
+|-separated when I wrote this. Maybe doesn't bode well. I'm not sure if we
+can merge all the kinds of list or not. But likely my fingers would get used
+to kwblock -> block, brackets -> comma/semi.
 >>> reactor: init => 10, on-tick(state) => state + 1, to-draw(state) => circle(state, "solid", "red") end
 Uncaught SyntaxError: No parse at 19
+
 >>> reactor: init => 10 end
 ["Block",["Name","reactor"],["KwBlock",["Pair",["Name","init"],["Number","10"]]]]
-'Success'
+
 >>> reactor: init => 10, on-tick(state) => state + 1 end
 Uncaught SyntaxError: No parse at 19
+
 >>> reactor: init => 10 | on-tick(state) => state + 1 end
 ["Block",["Name","reactor"],["KwBlock",["Block",["Pair",["Name","init"],["Number","10"]],["Pair",["Group",["Name","on-tick"],["Parens",["Name","state"]]],["Math",["Name","state"],["Op"," + "],["Number","1"]]]]]]
+
+
+
+Dot is just another op
+
+>>> o.x
+["Math",["Name","o"],["Op","."],["Name","x"]]
+
+
+
+Unfortunately, grouping all ops together has this effect – this is
+(o.(x())).(z()), not ((o.x()).z)()
+We could force the RHS of "." to be a name, but then we're in the business of
+assigning a lot of meaning to different ops
+
+>>> o.x().z()
+["Math",["Math",["Name","o"],["Op","."],["Group",["Name","x"],["Parens","()"]]],["Op","."],["Group",["Name","z"],["Parens","()"]]]

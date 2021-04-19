@@ -1,8 +1,34 @@
 import {parser} from "../lang.js";
 import "mocha";
 import { expect } from "chai";
+import { TreeCursor } from "lezer";
 
 const LOG = true;
+
+function toSexp(prog : string, cursor : TreeCursor) {
+  switch(cursor.type.name) {
+    case '⚠':
+      return "ERROR";
+    case '':
+      var result : any = [];
+      var hasNext = cursor.firstChild();
+      while(hasNext) {
+        result.push(toSexp(prog, cursor));
+        hasNext = cursor.nextSibling();
+      }
+      cursor.parent();
+      return result;
+    default:
+      var result : any = [cursor.node.type.name];
+      var hasNext = cursor.firstChild();
+      while(hasNext) {
+        result.push(toSexp(prog, cursor));
+        hasNext = cursor.nextSibling();
+      }
+      cursor.parent();
+      return result;
+  }
+}
 
 function parse(prog : string) : [string, boolean] {
   const input = prog;
@@ -50,6 +76,15 @@ end
     [list: 1, 2, 3]
 `, "list")
 
+  });
+
+  it("works with data pretty much unchanged", () => {
+    t(`
+data List[A]:
+  | link(f :: A, r :: List[A])
+  | empty
+end
+`, "I'm using [] for type instantiation, but I tihnk <> could also work");
   });
 
   it("requires changes to tables", () => {

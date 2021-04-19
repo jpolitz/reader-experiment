@@ -1,0 +1,51 @@
+>>> 5
+["Number","5"]
+'Success'
+>>> 5 + 1
+["Math",["Number","5"],["Op"," + "],["Number","1"]]
+'Success'
+>>> 5+1
+Uncaught SyntaxError: No parse at 1
+>>> fun f(x): x * 2 end
+["Block",["Name","fun"],["Group",["Name","f"],["Parens",["Name","x"]]],["KwBlock",["Math",["Name","x"],["Op"," * "],["Number","2"]]]]
+'Success'
+>>> data D[A]: empty | link(f :: A, r :: D[A]) end
+["Block",["Name","data"],["Group",["Name","D"],["Brackets",["Name","A"]]],["KwBlock",["Block",["Name","empty"],["Group",["Name","link"],["Parens",["Pair",["Name","f"],["Name","A"]],["Pair",["Name","r"],["Group",["Name","D"],["Brackets",["Name","A"]]]]]]]]]
+'Success'
+>>> (4) (5) (6)
+["Group",["Group",["Parens",["Number","4"]],["Parens",["Number","5"]]],["Parens",["Number","6"]]]
+'Success'
+>>> f :: ((x :: Number, y :: Number) => Number)
+["Pair",["Name","f"],["Parens",["Pair",["Parens",["Pair",["Name","x"],["Name","Number"]],["Pair",["Name","y"],["Name","Number"]]],["Name","Number"]]]]
+'Success'
+>>> cases(List) l: empty => 0 | link(f, r) => 1 + len(r) end
+["Block",["Group",["Name","cases"],["Parens",["Name","List"]]],["Name","l"],["KwBlock",["Block",["Pair",["Name","empty"],["Number","0"]],["Pair",["Group",["Name","link"],["Parens",["Name","f"],["Name","r"]]],["Math",["Number","1"],["Op"," + "],["Group",["Name","len"],["Parens",["Name","r"]]]]]]]]
+'Success'
+>>> table(a, b, c): [1, 2, 3] end
+["Block",["Group",["Name","table"],["Parens",["Name","a"],["Name","b"],["Name","c"]]],["KwBlock",["Brackets",["Number","1"],["Number","2"],["Number","3"]]]]
+'Success'
+>>> table a, b, c: row: 1, 2, 3 end
+Uncaught SyntaxError: No parse at 7
+>>> while True: when x > 10: break end x = x + 1 end
+["Block",["Name","while"],["Name","True"],["KwBlock",["Block",["Name","when"],["Math",["Name","x"],["Op"," > "],["Number","10"]],["KwBlock",["Name","break"]],["Math",["Math",["Name","x"],["Op"," = "],["Name","x"]],["Op"," + "],["Number","1"]]]]]
+'Success'
+>>> if x > 10: print("big") else: print("little") end
+Uncaught SyntaxError: No parse at 50
+>>> if x > 10: print("big") :: print("little") end
+["Block",["Name","if"],["Math",["Name","x"],["Op"," > "],["Number","10"]],["KwBlock",["Pair",["Group",["Name","print"],["Parens",["Str","\"big\""]]],["Group",["Name","print"],["Parens",["Str","\"little\""]]]]]]
+'Success'
+>>> if x > 10: print("big") => print("little") end
+["Block",["Name","if"],["Math",["Name","x"],["Op"," > "],["Number","10"]],["KwBlock",["Pair",["Group",["Name","print"],["Parens",["Str","\"big\""]]],["Group",["Name","print"],["Parens",["Str","\"little\""]]]]]]
+'Success'
+>>> ask: x > 10 => print("big") | else => print("little") end
+["Block",["Name","ask"],["KwBlock",["Block",["Pair",["Math",["Name","x"],["Op"," > "],["Number","10"]],["Group",["Name","print"],["Parens",["Str","\"big\""]]]],["Pair",["Name","else"],["Group",["Name","print"],["Parens",["Str","\"little\""]]]]]]]
+'Success'
+>>> reactor: init => 10, on-tick(state) => state + 1, to-draw(state) => circle(state, "solid", "red") end
+Uncaught SyntaxError: No parse at 19
+>>> reactor: init => 10 end
+["Block",["Name","reactor"],["KwBlock",["Pair",["Name","init"],["Number","10"]]]]
+'Success'
+>>> reactor: init => 10, on-tick(state) => state + 1 end
+Uncaught SyntaxError: No parse at 19
+>>> reactor: init => 10 | on-tick(state) => state + 1 end
+["Block",["Name","reactor"],["KwBlock",["Block",["Pair",["Name","init"],["Number","10"]],["Pair",["Group",["Name","on-tick"],["Parens",["Name","state"]]],["Math",["Name","state"],["Op"," + "],["Number","1"]]]]]]

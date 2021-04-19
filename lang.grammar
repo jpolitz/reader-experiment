@@ -1,68 +1,99 @@
-@top Program { skel* }
+@top Program { Block }
 
-@precedence { call @right, header @right, left @left }
+/* !call is so that the parser knows what to do when it sees 
 
+x + f(5)
+
+(it should treat the f(5) as a call, not that this is x + f followed by (5))
+
+Note that this means that
+
+(4)
+(5)
+
+is interpreted as a grouping that's like calling 4 with argument 5. This
+agrees with Honu!
+
+!op is to make all operators left-associate
+
+*/
+@precedence { call @left, op @left }
+
+// Different amounts or kinds of whitespace are not distinguished at all, it
+// just separates tokens
 @skip { space }
 
+/*
+  A `skel` is the main syntactic expression/statement form.
+  syntactic forms can be (sometimes with alteration) squeezed into a skel
+  shape.
+*/
 skel {
-  KwBlock | Terminal | Math | Prog | Header
+  KwBlock | Terminal | Math | Group
 }
-
-Math {
-  skel !left Op skel
-}
-
-Prog {
-    skel !left "." skel
-  | skel !left "=" skel
-}
-
-Header {
-  Parens | Brackets | Braces | Name !call Parens | Name !call Brackets | Name !call Braces
-}
-
+/*
+  A `skelorpair` is an element of a block or sequence. Pair expresses
+  mappings, like types and key/value pairs.
+*/
 skelorpair {
   skel | Pair
 }
-
 Pair {
-  skel "=>" skel
+    skel "=>" skel
+  | skel "::" skel
 }
 
-Parens {
-    "(" skelseq ")"
-  | "(" ")"
-}
-Brackets {
-    "[" "]"
-  | "[" skelseq "]"
-}
-Braces {
-    "{" "}"
-  | "{" skelseq "}"
+/*
+  This includes "=" and "." as ops for dot and assignment. I would imagine
+  adding all infix stuff to this rule. I would not imagine that the set of
+  infix ops is extensible, though their meaning may be changeable.
+*/
+Math {
+  skel !op Op skel
 }
 
-Block {
-    skel*
-  | ("|" skelorpair)*
+/*
+  A group of skels – think function calls, constructor syntax, etc.
+*/
+Group {
+  Parens | Brackets | Braces | skel !call Parens | skel !call Brackets | skel !call Braces
+}
+Parens { "(" ")" | "(" skelseq ")" }
+Brackets { "[" "]" | "[" skelseq "]" }
+Braces { "{" "}" | "{" skelseq "}" }
+
+/*
+  The leading Name/Group may not be necessary, but is to match current [list:
+  ...] or [mat(3, 4): ...] syntaxes. Otherwise, these have to be
+  homogeneously separated by "," or ";". Optional trailing ","/";"
+*/
+skelseq {
+  ((Name | Group) ":")? (skelorpair ("," skelorpair)* ","? | skelorpair (";" skelorpair)*) ";"?
 }
 
+/*
+  This distills Pyret's “rule” about colon matching end down to its essence.
+*/
 KwBlock {
-    Name !header Header? ":" Block @specialize<Name, "end">
+  ":" Block @specialize<Name, "end">
+}
+/*
+  Interesting to note that the way the grammar works, all the pipes are
+  individually optional. So Block is for both function bodies AND cases
+  bodies AND data, reactor, etc.
+*/
+Block {
+  "|"? skelorpair ("|"? skelorpair)*
 }
 
 Terminal { Name | Str | Number }
 
 @tokens {
   space { std.whitespace }
-  Name { std.asciiLetter+ }
+  Name { (std.asciiLetter | "-")+ }
   Str { "\"" std.asciiLetter+ "\"" }
   Number { std.digit+ }
-  Op { "+" | "-" | "*" | "/" | "==" | "<" | ">" | ">=" | "<=" }
-}
-
-skelseq {
-  ((Name | Header) ":")? skelorpair ("," skelorpair)* | skelorpair (";" skelorpair)*
+  Op { " + " | " - " | " * " | " / " | " == " | " < " | " > " | " >= " | " <= " | " = " | "." }
 }
 
 

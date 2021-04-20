@@ -1,0 +1,28 @@
+@precedence { call @left, op @left }
+
+// different amounts or kinds of whitespace are not distinguished at all, it
+// just separates tokens
+@skip { space }
+
+@top Program { stmt* }
+
+body { stmt* expr }
+
+FunDef { @specialize<Name, "def"> Name "(" (Name ("," Name)*)? ")" ":" body }
+Let { Name "=" expr }
+
+stmt { Let | FunDef }
+
+expr {
+    expr Op !op expr
+  | expr !call "(" (expr (", expr")*)? ")"
+  | Number
+  | Name
+}
+
+@tokens {
+  space { std.whitespace }
+  Name { (std.asciiLetter | "-")+ }
+  Number { std.digit+ }
+  Op { " + " | " - " | " * " | " / " | " == " | " < " | " > " | " >= " | " <= " }
+}

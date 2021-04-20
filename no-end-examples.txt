@@ -1,0 +1,20 @@
+>>> def f(x): x * 2
+["Program",["FunDef",["Name","f"],["Name","x"],["Expr",["Expr",["Name","x"]],["Op"," * "],["Expr",["Number","2"]]]]]
+
+>>> def f(x): y = x * 2     y + 1
+["Program",["FunDef",["Name","f"],["Name","x"],
+              ["Let",["Name","y"],["Expr",["Expr",["Name","x"]],["Op"," * "],["Expr",["Number","2"]]]],
+              ["Expr",["Expr",["Name","y"]],["Op"," + "],["Expr",["Number","1"]]]]]
+
+>>> def f(x): y = z(x)    y * z(y)
+["Program",["FunDef",["Name","f"],["Name","x"],
+              ["Let",["Name","y"],["Expr",["Expr",["Name","z"]],["Expr",["Name","x"]]]],
+              ["Expr",["Expr",["Name","y"]],["Op"," * "],["Expr",["Expr",["Name","z"]],["Expr",["Name","y"]]]]]]
+
+
+>>> def f(x): x + 2   def g(y): 1 + f(y) + f(3)
+["Program",
+  ["FunDef",["Name","f"],["Name","x"],
+    ["Expr",["Expr",["Name","x"]],["Op"," + "],["Expr",["Number","2"]]]],
+  ["FunDef",["Name","g"],["Name","y"],
+    ["Expr",["Expr",["Expr",["Number","1"]],["Op"," + "],["Expr",["Expr",["Name","f"]],["Expr",["Name","y"]]]],["Op"," + "],["Expr",["Expr",["Name","f"]],["Expr",["Number","3"]]]]]]

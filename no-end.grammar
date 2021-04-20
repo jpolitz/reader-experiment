@@ -6,16 +6,16 @@
 
 @top Program { stmt* }
 
-body { stmt* expr }
+body { stmt* Expr }
 
 FunDef { @specialize<Name, "def"> Name "(" (Name ("," Name)*)? ")" ":" body }
-Let { Name "=" expr }
+Let { Name "=" Expr }
 
 stmt { Let | FunDef }
 
-expr {
-    expr Op !op expr
-  | expr !call "(" (expr (", expr")*)? ")"
+Expr {
+    Expr Op !op Expr
+  | Expr !call "(" (Expr (", Expr")*)? ")"
   | Number
   | Name
 }
